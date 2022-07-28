@@ -31,6 +31,7 @@ export class TodosAccess {
       TableName: this.todosTable,
       IndexName: this.todosCreatedAtIndex,
       KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeNames: { 'userId': 'userId' },
       ExpressionAttributeValues: { ':userId': userId }
     }).promise()
     const items = result.Items
@@ -69,7 +70,7 @@ export class TodosAccess {
           'userId': userId,
           'todoId': todoId
       },
-      UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
+      UpdateExpression: 'set #name = :name, #dueDate = :dueDate, #done = :done',
       ExpressionAttributeNames: {
         '#name': 'name',
         '#dueDate': 'dueDate',
