@@ -1,25 +1,34 @@
 import 'source-map-support/register'
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
 
 import { deleteTodo } from '../../helpers/todos'
 import { getUserId } from '../utils'
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
   // TODO: Remove a TODO item by id
   try {
     const userId = getUserId(event)
-    const item = await deleteTodo(todoId, userId)
+    await deleteTodo(todoId, userId)
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Credentials': true
       },
-      body: JSON.stringify({ item })
+      body: JSON.stringify({})
     }
 
   } catch (error) {
-    throw new Error(error)
+    return {
+      statusCode: 404,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
+      body: JSON.stringify({
+        error: 'Todo does not exist'
+      })
+    }
   }
 }
