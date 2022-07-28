@@ -93,7 +93,7 @@ functions:
     handler: src/lambda/http/updateTodo.handler
     events:
       - http:
-          method: patch
+          method: put
           path: todos/{todoId}
           cors: true
           authorizer: Auth
