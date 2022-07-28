@@ -31,7 +31,6 @@ export class TodosAccess {
       TableName: this.todosTable,
       IndexName: this.todosCreatedAtIndex,
       KeyConditionExpression: 'userId = :userId',
-      ExpressionAttributeNames: { '#userId': 'userId' },
       ExpressionAttributeValues: { ':userId': userId }
     }).promise()
     const items = result.Items
