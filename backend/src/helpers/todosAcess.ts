@@ -25,12 +25,13 @@ export class TodosAccess {
   }
 
   async getTodoItems(userId: string): Promise<TodoItem[]> {
-    logger.info(`Getting all todos for user ${userId} from ${this.todosTable} at index ${this.todosCreatedAtIndex}`)
+    logger.info(`Getting all todos for user ${userId} from ${this.todosTable}`)
 
     const result = await this.docClient.query({
       TableName: this.todosTable,
       IndexName: this.todosCreatedAtIndex,
       KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeNames: { '#userId': 'userId' },
       ExpressionAttributeValues: { ':userId': userId }
     }).promise()
     const items = result.Items
@@ -57,25 +58,32 @@ export class TodosAccess {
       TableName: this.todosTable,
       Item: todoItem,
     }).promise()
+    logger.info('Created successfully')
   }
 
   async updateTodoItem(userId: string, todoId: string, todoUpdate: TodoUpdate) {
     logger.info(`Updating todo item ${todoId} in ${this.todosTable}`)
 
-    await this.docClient.update({
+    const result = await this.docClient.update({
       TableName: this.todosTable,
       Key: {
           'userId': userId,
           'todoId': todoId
       },
       UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
-      ExpressionAttributeNames: { '#name': 'name' },
+      ExpressionAttributeNames: {
+        '#name': 'name',
+        '#dueDate': 'dueDate',
+        '#done': 'done',
+      },
       ExpressionAttributeValues: {
         ':name': todoUpdate.name,
         ':dueDate': todoUpdate.dueDate,
         ':done': todoUpdate.done
       }
     }).promise()
+    logger.info('Updated successfully')
+    return result.Attributes as TodoUpdate
   }
 
   async deleteTodoItem(userId: string, todoId: string) {
@@ -85,6 +93,8 @@ export class TodosAccess {
       TableName: this.todosTable,
       Key: { 'userId': userId, 'todoId': todoId }
     }).promise()
+    logger.info('Deleted successfully')
+
   }
 
   async updateAttachmentUrl(userId: string, todoId: string, attachmentUrl: string) {

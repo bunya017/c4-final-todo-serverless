@@ -7,7 +7,6 @@ import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
-import * as createError from 'http-errors'
 
 // TODO: Implement businessLogic
 
@@ -37,43 +36,18 @@ export async function createTodo(userId: string, createTodoRequest: CreateTodoRe
 
 export async function updateTodo(userId: string, todoId: string, updateTodoRequest: UpdateTodoRequest) {
   logger.info(`Updating todo ${todoId} for user ${userId}`, { userId, todoId, todoUpdate: updateTodoRequest })
-
-  const item = await Todo.getTodoItem(userId, todoId)
-  if (!item)
-      throw createError(404, "Todo item not found!")
-  if (item.userId !== userId) {
-      logger.error(`User ${userId} does not have permission to update todo ${todoId}`)
-      throw createError(403, "User is not authorized to update item")
-  }
-  Todo.updateTodoItem(userId, todoId, updateTodoRequest as TodoUpdate)
+  await Todo.updateTodoItem(userId, todoId, updateTodoRequest as TodoUpdate)
 }
 
 export async function deleteTodo(userId: string, todoId: string) {
   logger.info(`Deleting todo ${todoId} for user ${userId}`, { userId, todoId })
-
-  const item = await Todo.getTodoItem(userId, todoId)
-  if (!item)
-      throw createError(404, "Todo item not found!")
-  if (item.userId !== userId) {
-      logger.error(`User ${userId} does not have permission to delete todo ${todoId}`)
-      throw createError(403, "User is not authorized to delete item!")
-  }
-  Todo.deleteTodoItem(userId, todoId)
+  await Todo.deleteTodoItem(userId, todoId)
 }
 
 export async function updateAttachmentUrl(userId: string, todoId: string, attachmentId: string) {
   logger.info(`Generating attachment URL for attachment ${attachmentId}`)
   const attachmentUrl = await getAttachmentUrl(attachmentId)
   logger.info(`Updating todo ${todoId} with attachment URL ${attachmentUrl}`, { userId, todoId })
-
-  const item = await Todo.getTodoItem(userId, todoId)
-  if (!item)
-      throw createError(404, "Todo item not found!")
-  if (item.userId !== userId) {
-      logger.error(`User ${userId} does not have permission to update todo ${todoId}`)
-      throw createError(403, "User is not authorized to update item!")
-  }
-
   await Todo.updateAttachmentUrl(userId, todoId, attachmentUrl)
 }
 
