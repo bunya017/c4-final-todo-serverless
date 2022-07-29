@@ -27,6 +27,10 @@ export async function createTodo(userId: string, createTodoRequest: CreateTodoRe
     attachmentUrl: null,
     ...createTodoRequest
   }
+  if (newItem.name.length === 0) {
+    logger.error('Name field is required!')
+    throw new Error('Name field is required!')
+  }
   logger.info(`Creating todo ${todoId} for user ${userId}`, { userId, todoId, todoItem: newItem })
   await Todo.createTodoItem(newItem)
 
