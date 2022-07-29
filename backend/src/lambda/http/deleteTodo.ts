@@ -6,7 +6,6 @@ import { getUserId } from '../utils'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
-  // TODO: Remove a TODO item by id
   try {
     const userId = getUserId(event)
     await deleteTodo(userId, todoId)

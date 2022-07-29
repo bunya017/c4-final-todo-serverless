@@ -8,7 +8,6 @@ import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
 
-// TODO: Implement businessLogic
 
 const logger = createLogger('businessLogic/todos')
 const Todo = new TodosAccess()

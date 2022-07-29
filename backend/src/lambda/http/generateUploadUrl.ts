@@ -7,7 +7,6 @@ import { getUserId } from '../utils'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
-  // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
   try {
     const userId = getUserId(event)
     const attachmentId = uuid.v4()
