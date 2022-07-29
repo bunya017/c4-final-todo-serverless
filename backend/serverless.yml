@@ -7,6 +7,8 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -80,6 +82,7 @@ functions:
           request:
             schemas:
               application/json: ${file(models/create-todo-model.json)}
+          reqValidatorName: xMyRequestValidator
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
@@ -100,6 +103,7 @@ functions:
           request:
             schemas:
               application/json: ${file(models/update-todo-model.json)}
+          reqValidatorName: xMyRequestValidator
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
@@ -159,7 +163,16 @@ resources:
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi
-    
+
+    xMyRequestValidator:  
+      Type: "AWS::ApiGateway::RequestValidator"
+      Properties:
+        Name: 'my-req-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+
     # TODO: Create a DynamoDB table with local secondary index and a composite key
     TodosTable:
       Type: AWS::DynamoDB::Table
